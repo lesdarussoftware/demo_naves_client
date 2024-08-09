@@ -1,0 +1,9 @@
+body {
+  max-width: 2000px;
+}
+
+@media (min-width: 2001px) {
+  body {
+    margin: auto;
+  }
+}
