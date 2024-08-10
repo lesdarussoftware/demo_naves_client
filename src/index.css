@@ -4,6 +4,6 @@ body {
 
 @media (min-width: 2001px) {
   body {
-    margin: auto;
+    margin: 0 auto !important;
   }
 }
