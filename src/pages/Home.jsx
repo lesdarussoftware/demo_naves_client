@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import { Wallet } from "@mercadopago/sdk-react";
-import { Box, Button } from "@mui/material";
+import { Button } from "@mui/material";
 
 import { MpContext } from "../providers/MpProvider";
 import { useCheckout } from "../hooks/useCheckout";
+import { Layout } from "../components/Layout";
 
 export function Home() {
 
@@ -12,7 +13,7 @@ export function Home() {
     const { createPreference } = useCheckout()
 
     return (
-        <Box>
+        <Layout>
             <Button variant="contained" onClick={() => createPreference({
                 title: 'esto es una prueba',
                 unit_price: '22',
@@ -26,6 +27,6 @@ export function Home() {
                     customization={{ texts: { valueProp: 'smart_option' } }}
                 />
             }
-        </Box>
+        </Layout>
     )
 }
