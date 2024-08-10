@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import { MpContext } from "../providers/MpProvider";
 
@@ -7,6 +7,8 @@ import { CHECKOUT_URL } from "../helpers/urls";
 export function useCheckout() {
 
     const { setPreferenceId } = useContext(MpContext)
+
+    const [loading, setLoading] = useState(false)
 
     async function createPreference(order) {
         const res = await fetch(CHECKOUT_URL + '/create-preference', {
@@ -17,11 +19,15 @@ export function useCheckout() {
             body: JSON.stringify(order)
         })
         const data = await res.json()
-        console.log(data)
-        if (res.status === 201) setPreferenceId(data.id)
+        if (res.status === 201) {
+            setPreferenceId(data.id)
+            setLoading(false)
+        }
     }
 
     return {
+        loading,
+        setLoading,
         createPreference
     }
 }
