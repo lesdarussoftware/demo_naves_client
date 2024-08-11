@@ -29,7 +29,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <MpProvider>
         <CartProvider>
-          <BrowserRouter>
+          <BrowserRouter basename='demo-naves'>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/checkout-success" element={<Success />} />
