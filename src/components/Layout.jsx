@@ -16,10 +16,10 @@ import { Avatar } from "@mui/material";
 import Button from '@mui/material/Button';
 import ShoppingCartSharpIcon from '@mui/icons-material/ShoppingCartSharp';
 
-import { CartDrawer } from './CartDrawer';
+import { AuthContext } from '../providers/AuthProvider';
 import { CartContext } from '../providers/CartProvider';
 
-// import { AuthContext } from '../../providers/AuthProvider';
+import { CartDrawer } from './CartDrawer';
 
 // import { UserDropdown } from './UserDropdown';
 
@@ -30,7 +30,7 @@ const drawerWidth = 240;
 
 export function Layout({ window, children }) {
 
-    // const { auth } = useContext(AuthContext);
+    const { auth } = useContext(AuthContext);
     const { showCart, setShowCart, productsToBuy } = useContext(CartContext)
 
     const navigate = useNavigate()
@@ -40,7 +40,9 @@ export function Layout({ window, children }) {
     const [showUserDropdown, setShowUserDropdown] = useState(false);
 
     const navItems = [
-        { label: 'Inicio', pathname: '/', action: () => navigate('/') },
+        { label: 'Inicio', pathname: '/', auth: true, action: () => navigate('/') },
+        { label: 'Registro', pathname: '/registro', auth: false, action: () => navigate('/registro') },
+        { label: 'Login', pathname: '/login', auth: false, action: () => navigate('/login') }
     ];
 
     const handleDrawerToggle = () => {
@@ -52,7 +54,7 @@ export function Layout({ window, children }) {
             {/* <img src={LogoWhite} width={60} /> */}
             <Divider />
             <List>
-                {navItems.map((item) => (
+                {navItems.filter(item => item.auth || (!item.auth && !auth)).map((item) => (
                     <ListItem key={item.label} disablePadding onClick={() => item.action()}>
                         <ListItemButton sx={{ textAlign: 'center' }}>
                             <ListItemText primary={item.label.toUpperCase()} />
@@ -82,7 +84,7 @@ export function Layout({ window, children }) {
                     {/* <img src={LogoBlack} width={60} className='menuLogo' /> */}
                     <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', gap: 4 }}>
                         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                            {navItems.map((item) => (
+                            {navItems.filter(item => item.auth || (!item.auth && !auth)).map((item) => (
                                 <Button
                                     key={item.label}
                                     sx={{
@@ -101,44 +103,48 @@ export function Layout({ window, children }) {
                                 </Button>
                             ))}
                         </Box>
-                        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                            <ShoppingCartSharpIcon
-                                sx={{
-                                    transform: 'scale(1.3)',
-                                    transition: '200ms all',
-                                    cursor: 'pointer',
-                                    ':hover': { transform: 'scale(1.5)' }
-                                }}
-                                onClick={() => setShowCart(!showCart)}
-                            />
-                            <Box sx={{
-                                position: 'absolute',
-                                bottom: -15,
-                                right: -15,
-                                backgroundColor: '#002561',
-                                color: '#fff',
-                                borderRadius: '50%',
-                                width: '20px',
-                                height: '20px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '12px',
-                                fontWeight: 'bold',
-                            }}>
-                                {productsToBuy.length}
-                            </Box>
-                        </Box>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
-                            <Avatar
-                                sx={{ cursor: 'pointer', backgroundColor: '#FFF', color: '#002561' }}
-                                onMouseEnter={() => setShowUserDropdown(true)}
-                                onClick={() => setShowUserDropdown(!showUserDropdown)}
-                            >
-                                U
-                            </Avatar>
-                            {/* {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown} />} */}
-                        </Box>
+                        {auth &&
+                            <>
+                                <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                                    <ShoppingCartSharpIcon
+                                        sx={{
+                                            transform: 'scale(1.3)',
+                                            transition: '200ms all',
+                                            cursor: 'pointer',
+                                            ':hover': { transform: 'scale(1.5)' }
+                                        }}
+                                        onClick={() => setShowCart(!showCart)}
+                                    />
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        bottom: -15,
+                                        right: -15,
+                                        backgroundColor: '#002561',
+                                        color: '#fff',
+                                        borderRadius: '50%',
+                                        width: '20px',
+                                        height: '20px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '12px',
+                                        fontWeight: 'bold',
+                                    }}>
+                                        {productsToBuy.length}
+                                    </Box>
+                                </Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
+                                    <Avatar
+                                        sx={{ cursor: 'pointer', backgroundColor: '#FFF', color: '#002561' }}
+                                        onMouseEnter={() => setShowUserDropdown(true)}
+                                        onClick={() => setShowUserDropdown(!showUserDropdown)}
+                                    >
+                                        U
+                                    </Avatar>
+                                    {/* {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown} />} */}
+                                </Box>
+                            </>
+                        }
                     </Box>
                 </Toolbar>
             </AppBar>
