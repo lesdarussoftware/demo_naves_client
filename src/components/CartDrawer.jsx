@@ -105,7 +105,11 @@ export function CartDrawer() {
                         </TableHead>
                         <TableBody>
                             {productsToBuy.length === 0 ?
-                                <TableCell align='center' colSpan={4}>El carrito está vacío.</TableCell> :
+                                <TableRow>
+                                    <TableCell align='center' colSpan={4}>
+                                        El carrito está vacío.
+                                    </TableCell>
+                                </TableRow> :
                                 productsToBuy.sort((a, b) => {
                                     if (a.title > b.title) return 1;
                                     if (a.title < b.title) return -1;
@@ -139,7 +143,7 @@ export function CartDrawer() {
                         </TableBody>
                     </Table>
                 </TableContainer>
-                <Typography variant='h6' align='end' p={2}>
+                <Typography variant='h6' align='right' p={2}>
                     Total: ${productsToBuy.reduce((acc, product) => acc + product.unit_price * product.quantity, 0).toFixed(2)}
                 </Typography>
                 <Divider />
