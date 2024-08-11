@@ -10,13 +10,13 @@ export function useCheckout() {
 
     const [loading, setLoading] = useState(false)
 
-    async function createPreference(order) {
+    async function createPreference(items) {
         const res = await fetch(CHECKOUT_URL + '/create-preference', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(order)
+            body: JSON.stringify(items)
         })
         const data = await res.json()
         if (res.status === 201) {

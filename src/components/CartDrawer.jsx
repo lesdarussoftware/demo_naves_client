@@ -3,24 +3,20 @@ import { Wallet } from '@mercadopago/sdk-react';
 import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 import { MpContext } from '../providers/MpProvider';
 import { CartContext } from '../providers/CartProvider';
 import { useCheckout } from '../hooks/useCheckout';
 
-const drawerWidth = 300;
+const drawerWidth = 500;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -34,19 +30,47 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 export function CartDrawer() {
 
     const { preferenceId, setPreferenceId } = useContext(MpContext)
-    const { showCart, setShowCart } = useContext(CartContext)
+    const { showCart, setShowCart, productsToBuy, setProductsToBuy } = useContext(CartContext)
 
     const theme = useTheme();
 
     const { loading, setLoading, createPreference } = useCheckout()
 
+    const handleIncrement = title => {
+        setProductsToBuy([
+            ...productsToBuy.filter(product => product.title !== title),
+            {
+                ...productsToBuy.find(p => p.title === title),
+                quantity: productsToBuy.find(p => p.title === title)?.quantity + 1 || 1
+            }
+        ].sort((a, b) => {
+            if (a.title > b.title) return 1;
+            if (a.title < b.title) return -1;
+            return 0;
+        }))
+    }
+
+    const handleDecrement = title => {
+        setProductsToBuy([
+            ...productsToBuy.filter(product => product.title !== title),
+            {
+                ...productsToBuy.find(p => p.title === title),
+                quantity: productsToBuy.find(p => p.title === title)?.quantity - 1 || 1
+            }
+        ].sort((a, b) => {
+            if (a.title > b.title) return 1;
+            if (a.title < b.title) return -1;
+            return 0;
+        }))
+    }
+
+    const handleRemoveItem = title => {
+        setProductsToBuy([...productsToBuy.filter(product => product.title !== title)])
+    }
+
     const handleConfirm = () => {
         setLoading(true)
-        createPreference({
-            title: 'esto es una prueba',
-            unit_price: '22',
-            quantity: '1'
-        })
+        createPreference({ items: productsToBuy })
     }
 
     return (
@@ -69,18 +93,55 @@ export function CartDrawer() {
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell align='center'>Producto</TableCell>
+                                <TableCell align='center'>Cantidad</TableCell>
+                                <TableCell align='center'>Precio</TableCell>
+                                <TableCell align='center'>Eliminar</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {productsToBuy.length === 0 ?
+                                <TableCell align='center' colSpan={4}>El carrito está vacío.</TableCell> :
+                                productsToBuy.sort((a, b) => {
+                                    if (a.title > b.title) return 1;
+                                    if (a.title < b.title) return -1;
+                                    return 0;
+                                }).map(ptb => (
+                                    <TableRow key={ptb.title}>
+                                        <TableCell align='center' sx={{ borderBottom: 0 }}>{ptb.title}</TableCell>
+                                        <TableCell align='center' sx={{ display: 'flex', alignItems: 'center', borderBottom: 0 }}>
+                                            <Button
+                                                variant='contained'
+                                                disabled={ptb.quantity <= 1}
+                                                onClick={() => handleDecrement(ptb.title)}
+                                            >
+                                                <RemoveIcon />
+                                            </Button>
+                                            <Typography variant='body1' sx={{ p: 2 }}>
+                                                {ptb.quantity}
+                                            </Typography>
+                                            <Button variant='contained' onClick={() => handleIncrement(ptb.title)}>
+                                                <AddIcon />
+                                            </Button>
+                                        </TableCell>
+                                        <TableCell align='center' sx={{ borderBottom: 0 }}>${(ptb.unit_price * ptb.quantity).toFixed(2)}</TableCell>
+                                        <TableCell align='center' sx={{ borderBottom: 0 }}>
+                                            <Button variant='contained' onClick={() => handleRemoveItem(ptb.title)}>
+                                                <DeleteIcon />
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                <Typography variant='h6' align='end' p={2}>
+                    Total: ${productsToBuy.reduce((acc, product) => acc + product.unit_price * product.quantity, 0).toFixed(2)}
+                </Typography>
                 <Divider />
                 <Box sx={{ pl: 1, pr: 1, pt: preferenceId ? '' : 1 }}>
                     {loading ?
@@ -108,7 +169,8 @@ export function CartDrawer() {
                                 </> :
                                 <Button
                                     variant="contained"
-                                    sx={{ width: '100%' }}
+                                    sx={{ width: '70%', py: 2, display: 'block', m: 'auto', mt: 2 }}
+                                    disabled={productsToBuy.length === 0}
                                     onClick={handleConfirm}
                                 >
                                     Confirmar

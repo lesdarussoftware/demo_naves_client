@@ -31,7 +31,7 @@ const drawerWidth = 240;
 export function Layout({ window, children }) {
 
     // const { auth } = useContext(AuthContext);
-    const { showCart, setShowCart } = useContext(CartContext)
+    const { showCart, setShowCart, productsToBuy } = useContext(CartContext)
 
     const navigate = useNavigate()
     const { pathname } = useLocation()
@@ -101,15 +101,34 @@ export function Layout({ window, children }) {
                                 </Button>
                             ))}
                         </Box>
-                        <ShoppingCartSharpIcon
-                            sx={{
-                                transform: 'scale(1.3)',
-                                transition: '200ms all',
-                                cursor: 'pointer',
-                                ':hover': { transform: 'scale(1.5)' }
-                            }}
-                            onClick={() => setShowCart(!showCart)}
-                        />
+                        <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                            <ShoppingCartSharpIcon
+                                sx={{
+                                    transform: 'scale(1.3)',
+                                    transition: '200ms all',
+                                    cursor: 'pointer',
+                                    ':hover': { transform: 'scale(1.5)' }
+                                }}
+                                onClick={() => setShowCart(!showCart)}
+                            />
+                            <Box sx={{
+                                position: 'absolute',
+                                bottom: -15,
+                                right: -15,
+                                backgroundColor: '#002561',
+                                color: '#fff',
+                                borderRadius: '50%',
+                                width: '20px',
+                                height: '20px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                fontSize: '12px',
+                                fontWeight: 'bold',
+                            }}>
+                                {productsToBuy.length}
+                            </Box>
+                        </Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', position: 'relative' }}>
                             <Avatar
                                 sx={{ cursor: 'pointer', backgroundColor: '#FFF', color: '#002561' }}

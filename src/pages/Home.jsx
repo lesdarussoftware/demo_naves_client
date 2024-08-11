@@ -1,14 +1,20 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { IconButton, ImageList, ImageListItem, ImageListItemBar, Typography, Box, Tooltip } from "@mui/material";
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import { Carousel } from 'react-responsive-carousel';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 
+import { CartContext } from "../providers/CartProvider";
 import { useProducts } from "../hooks/useProducts";
+
 import { Layout } from "../components/Layout";
+
 import { SERVER_URL } from "../helpers/urls";
 
 export function Home() {
+
+    const { productsToBuy, setProductsToBuy } = useContext(CartContext)
+
     const { products, getProducts } = useProducts();
 
     useEffect(() => {
@@ -19,7 +25,7 @@ export function Home() {
         <Layout>
             <ImageList sx={{ width: '100%', margin: 0, display: 'flex', justifyContent: 'center', flexWrap: 'wrap' }}>
                 {products.map((product) => (
-                    <ImageListItem key={product.id} sx={{ width: '300px' }}>
+                    <ImageListItem key={product.id} sx={{ width: '330px' }}>
                         <Carousel
                             showArrows={true}
                             showThumbs={false}
@@ -58,6 +64,15 @@ export function Home() {
                                         ':hover': { backgroundColor: '#FFF', color: '#002561' }
                                     }}
                                     aria-label={`add ${product.name} to cart`}
+                                    disabled={productsToBuy.length > 0 && productsToBuy.map(p => p.title).includes(product.name)}
+                                    onClick={() => setProductsToBuy([
+                                        {
+                                            title: product.name,
+                                            unit_price: product.price,
+                                            quantity: 1
+                                        },
+                                        ...productsToBuy
+                                    ])}
                                 >
                                     <AddShoppingCartIcon />
                                 </IconButton>
