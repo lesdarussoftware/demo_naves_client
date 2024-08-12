@@ -41,6 +41,7 @@ export function Layout({ window, children }) {
 
     const navItems = [
         { label: 'Inicio', pathname: '/', auth: true, action: () => navigate('/') },
+        { label: 'Pagos', pathname: '/pagos', auth: true, action: () => navigate('/pagos') },
         { label: 'Registro', pathname: '/registro', auth: false, action: () => navigate('/registro') },
         { label: 'Login', pathname: '/login', auth: false, action: () => navigate('/login') }
     ];

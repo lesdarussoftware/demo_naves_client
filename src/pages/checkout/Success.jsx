@@ -17,13 +17,17 @@ export function Success() {
     const { updatePayment } = usePayments()
 
     useEffect(() => {
-        const payment_id = searchParams.get('payment_id')
-        const status = searchParams.get('status')
-        const external_reference = searchParams.get('external_reference')
-        if (payment_id && status && status === 'approved' && external_reference === auth.user.id) {
-            updatePayment(payment_id)
+        if (auth) {
+            const payment_id = searchParams.get('payment_id')
+            const status = searchParams.get('status')
+            const external_reference = searchParams.get('external_reference')
+            if (payment_id && status && status === 'approved' && external_reference === auth.user.id) {
+                updatePayment(payment_id)
+            }
+        } else {
+            return navigate('/')
         }
-    }, [searchParams])
+    }, [])
 
     return (
         <Layout>

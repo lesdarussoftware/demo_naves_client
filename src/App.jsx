@@ -12,6 +12,8 @@ import { Pending } from './pages/checkout/Pending';
 import { Failure } from './pages/checkout/Failure';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
+import { Payments } from './pages/Payments';
+import { Error } from './pages/Error';
 
 function App() {
 
@@ -34,9 +36,11 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registro" element={<Register />} />
+                <Route path="/pagos" element={<Payments />} />
                 <Route path="/checkout-success" element={<Success />} />
                 <Route path="/checkout-pending" element={<Pending />} />
                 <Route path="/checkout-failure" element={<Failure />} />
+                <Route path="*" element={<Error />} />
               </Routes>
             </BrowserRouter>
           </CartProvider>
