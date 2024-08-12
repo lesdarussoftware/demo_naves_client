@@ -14,7 +14,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 import { MpContext } from '../providers/MpProvider';
 import { CartContext } from '../providers/CartProvider';
+import { MetamaskContext } from '../providers/MetamaskProvider';
 import { useCheckout } from '../hooks/useCheckout';
+import { useMetamask } from '../hooks/useMetamask';
 
 const drawerWidth = 500;
 
@@ -29,12 +31,21 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 
 export function CartDrawer() {
 
+    const { account } = useContext(MetamaskContext)
     const { preferenceId, setPreferenceId } = useContext(MpContext)
     const { showCart, setShowCart, productsToBuy, setProductsToBuy } = useContext(CartContext)
 
     const theme = useTheme();
 
-    const { loading, setLoading, createPreference } = useCheckout()
+    const {
+        loading,
+        setLoading,
+        createPreference,
+        cartConfirmed,
+        setCartConfirmed,
+        sendTransactionSignature
+    } = useCheckout()
+    const { connectMetaMask, getTransactionSignature } = useMetamask()
 
     const handleIncrement = title => {
         setProductsToBuy([
@@ -68,9 +79,21 @@ export function CartDrawer() {
         setProductsToBuy([...productsToBuy.filter(product => product.title !== title)])
     }
 
-    const handleConfirm = () => {
+    const handelCancel = () => {
+        setShowCart(false)
+        setCartConfirmed(false)
+        setPreferenceId(null)
+    }
+
+    const handlePayWithMp = () => {
         setLoading(true)
         createPreference({ items: productsToBuy })
+    }
+
+    const handlePayWithLds = async (amount) => {
+        setLoading(true)
+        const { r, s, v } = await getTransactionSignature(amount)
+        sendTransactionSignature({ account, amount, r, s, v })
     }
 
     return (
@@ -120,7 +143,7 @@ export function CartDrawer() {
                                         <TableCell align='center' sx={{ display: 'flex', alignItems: 'center', borderBottom: 0 }}>
                                             <Button
                                                 variant='contained'
-                                                disabled={ptb.quantity <= 1 || preferenceId !== null}
+                                                disabled={ptb.quantity <= 1 || preferenceId !== null || cartConfirmed}
                                                 onClick={() => handleDecrement(ptb.title)}
                                             >
                                                 <RemoveIcon />
@@ -130,7 +153,7 @@ export function CartDrawer() {
                                             </Typography>
                                             <Button
                                                 variant='contained'
-                                                disabled={preferenceId !== null}
+                                                disabled={preferenceId !== null || cartConfirmed}
                                                 onClick={() => handleIncrement(ptb.title)}
                                             >
                                                 <AddIcon />
@@ -140,7 +163,7 @@ export function CartDrawer() {
                                         <TableCell align='center' sx={{ borderBottom: 0 }}>
                                             <Button
                                                 variant='contained'
-                                                disabled={preferenceId !== null}
+                                                disabled={preferenceId !== null || cartConfirmed}
                                                 onClick={() => handleRemoveItem(ptb.title)}
                                             >
                                                 <DeleteIcon />
@@ -171,22 +194,54 @@ export function CartDrawer() {
                                     <Button
                                         variant='outlined'
                                         sx={{ width: '100%', display: 'block', m: 'auto', mt: 2 }}
-                                        onClick={() => {
-                                            setShowCart(false)
-                                            setPreferenceId(null)
-                                        }}
+                                        onClick={handelCancel}
                                     >
                                         Cancelar
                                     </Button>
                                 </> :
-                                <Button
-                                    variant="contained"
-                                    sx={{ width: '70%', py: 2, display: 'block', m: 'auto', mt: 2 }}
-                                    disabled={productsToBuy.length === 0}
-                                    onClick={handleConfirm}
-                                >
-                                    Confirmar
-                                </Button>
+                                <>
+                                    {cartConfirmed ?
+                                        <>
+                                            <Button
+                                                variant="contained"
+                                                sx={{ width: '70%', py: 2, display: 'block', m: 'auto', mt: 2 }}
+                                                onClick={handlePayWithMp}
+                                            >
+                                                Pagar con Mercado Pago
+                                            </Button>
+                                            <Button
+                                                variant="contained"
+                                                sx={{ width: '70%', py: 2, display: 'block', m: 'auto', mt: 2 }}
+                                                onClick={() => {
+                                                    if (account) {
+                                                        handlePayWithLds(productsToBuy.reduce((acc, product) => {
+                                                            return acc + product.unit_price * product.quantity
+                                                        }, 0).toFixed(2))
+                                                    } else {
+                                                        connectMetaMask()
+                                                    }
+                                                }}
+                                            >
+                                                {account ? 'Pagar con LDS' : 'Conectar Metamask'}
+                                            </Button>
+                                            <Button
+                                                variant='outlined'
+                                                sx={{ width: '70%', py: 2, display: 'block', m: 'auto', mt: 2 }}
+                                                onClick={() => setCartConfirmed(false)}
+                                            >
+                                                Modificar compra
+                                            </Button>
+                                        </> :
+                                        <Button
+                                            variant="contained"
+                                            sx={{ width: '70%', py: 2, display: 'block', m: 'auto', mt: 2 }}
+                                            disabled={productsToBuy.length === 0}
+                                            onClick={() => setCartConfirmed(true)}
+                                        >
+                                            Confirmar
+                                        </Button>
+                                    }
+                                </>
                             }
                         </>
                     }

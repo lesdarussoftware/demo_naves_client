@@ -10,6 +10,7 @@ export function useCheckout() {
     const { auth } = useContext(AuthContext)
     const { setPreferenceId } = useContext(MpContext)
 
+    const [cartConfirmed, setCartConfirmed] = useState(false)
     const [loading, setLoading] = useState(false)
 
     async function createPreference(items) {
@@ -28,9 +29,26 @@ export function useCheckout() {
         }
     }
 
+    async function sendTransactionSignature({ account, amount, r, s, v }) {
+        const res = await fetch(CHECKOUT_URL + '/transaction-signature', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': auth?.token
+            },
+            body: JSON.stringify({ account, amount, r, s, v })
+        })
+        const data = await res.json()
+        setLoading(false)
+        console.log(data.message)
+    }
+
     return {
         loading,
         setLoading,
-        createPreference
+        cartConfirmed,
+        setCartConfirmed,
+        createPreference,
+        sendTransactionSignature
     }
 }
