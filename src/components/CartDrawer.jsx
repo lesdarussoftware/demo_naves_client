@@ -134,7 +134,11 @@ export function CartDrawer() {
                                         </TableCell>
                                         <TableCell align='center' sx={{ borderBottom: 0 }}>${(ptb.unit_price * ptb.quantity).toFixed(2)}</TableCell>
                                         <TableCell align='center' sx={{ borderBottom: 0 }}>
-                                            <Button variant='contained' onClick={() => handleRemoveItem(ptb.title)}>
+                                            <Button
+                                                variant='contained'
+                                                disabled={preferenceId}
+                                                onClick={() => handleRemoveItem(ptb.title)}
+                                            >
                                                 <DeleteIcon />
                                             </Button>
                                         </TableCell>
