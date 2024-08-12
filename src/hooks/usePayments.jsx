@@ -33,5 +33,17 @@ export function usePayments() {
         })
     }
 
-    return { payments, getPayments, updatePayment }
+    async function handleClaimReward({ payment_id, recipient }) {
+        const res = await fetch(`${PAYMENT_URL}/claim-reward?payment_id=${payment_id}&recipient=${recipient}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': auth?.token
+            }
+        })
+        const data = await res.json()
+        console.log(data)
+    }
+
+    return { payments, getPayments, updatePayment, handleClaimReward }
 }

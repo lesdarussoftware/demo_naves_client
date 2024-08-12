@@ -12,7 +12,7 @@ export function Payments() {
 
     const { account } = useContext(MetamaskContext)
 
-    const { payments, getPayments } = usePayments()
+    const { payments, getPayments, handleClaimReward } = usePayments()
     const { connectMetaMask } = useMetamask()
 
     useEffect(() => {
@@ -59,6 +59,10 @@ export function Payments() {
                                             <Button
                                                 variant="contained"
                                                 disabled={!account}
+                                                onClick={() => handleClaimReward({
+                                                    payment_id: payment.mp_id,
+                                                    recipient: account
+                                                })}
                                             >
                                                 Reclamar
                                             </Button>
