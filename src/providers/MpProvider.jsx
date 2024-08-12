@@ -1,7 +1,7 @@
 import { createContext, useState } from "react";
 import { initMercadoPago } from '@mercadopago/sdk-react'
 
-import { VITE_APP_MP_PUBLIC_KEY } from "../helpers/env";
+import { MP_PUBLIC_KEY } from "../helpers/env";
 
 export const MpContext = createContext({
     preferenceId: null,
@@ -10,7 +10,7 @@ export const MpContext = createContext({
 
 export function MpProvider({ children }) {
 
-    initMercadoPago(VITE_APP_MP_PUBLIC_KEY)
+    initMercadoPago(MP_PUBLIC_KEY)
 
     const [preferenceId, setPreferenceId] = useState(null)
 

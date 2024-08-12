@@ -1,14 +1,19 @@
-import { useEffect } from "react";
-import { Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
+import { useContext, useEffect } from "react";
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { format } from 'date-fns'
 
+import { MetamaskContext } from "../providers/MetamaskProvider";
 import { usePayments } from "../hooks/usePayments";
+import { useMetamask } from "../hooks/useMetamask";
 
 import { Layout } from "../components/Layout";
 
 export function Payments() {
 
+    const { account } = useContext(MetamaskContext)
+
     const { payments, getPayments } = usePayments()
+    const { connectMetaMask } = useMetamask()
 
     useEffect(() => {
         getPayments()
@@ -16,6 +21,16 @@ export function Payments() {
 
     return (
         <Layout>
+            {!account &&
+                <Box mt={1} mb={2}>
+                    <Button
+                        variant="contained"
+                        onClick={() => connectMetaMask()}
+                    >
+                        Conectar con MetaMask
+                    </Button>
+                </Box>
+            }
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
@@ -41,7 +56,10 @@ export function Payments() {
                                     <TableCell align="center">
                                         {payment.rewarded ?
                                             'No disponible' :
-                                            <Button variant="contained">
+                                            <Button
+                                                variant="contained"
+                                                disabled={!account}
+                                            >
                                                 Reclamar
                                             </Button>
                                         }

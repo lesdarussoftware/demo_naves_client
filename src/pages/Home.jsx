@@ -9,7 +9,7 @@ import { useProducts } from "../hooks/useProducts";
 
 import { Layout } from "../components/Layout";
 
-import { SERVER_URL } from "../helpers/urls";
+import { SERVER_URL } from "../helpers/env";
 
 export function Home() {
 
