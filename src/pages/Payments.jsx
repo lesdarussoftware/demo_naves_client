@@ -46,7 +46,7 @@ export function Payments() {
                             <TableRow>
                                 <TableCell align="center" colSpan={4}>No hay pagos registrados.</TableCell>
                             </TableRow> :
-                            payments.map((payment) => (
+                            payments.sort((a, b) => a.id - b.id).map((payment) => (
                                 <TableRow key={payment.id}>
                                     <TableCell align="center">{payment.id}</TableCell>
                                     <TableCell align="center">{payment.mp_id}</TableCell>
@@ -54,19 +54,16 @@ export function Payments() {
                                         {format(new Date(payment.created_at), 'dd/MM/yyyy HH:MM:ss')}
                                     </TableCell>
                                     <TableCell align="center">
-                                        {payment.rewarded ?
-                                            'No disponible' :
-                                            <Button
-                                                variant="contained"
-                                                disabled={!account}
-                                                onClick={() => handleClaimReward({
-                                                    payment_id: payment.mp_id,
-                                                    recipient: account
-                                                })}
-                                            >
-                                                Reclamar
-                                            </Button>
-                                        }
+                                        <Button
+                                            variant="contained"
+                                            disabled={!account || payment.rewarded}
+                                            onClick={() => handleClaimReward({
+                                                payment_id: payment.mp_id,
+                                                recipient: account
+                                            })}
+                                        >
+                                            {payment.rewarded ? 'Cobrado' : 'Reclamar'}
+                                        </Button>
                                     </TableCell>
                                 </TableRow>
                             ))}

@@ -120,7 +120,7 @@ export function CartDrawer() {
                                         <TableCell align='center' sx={{ display: 'flex', alignItems: 'center', borderBottom: 0 }}>
                                             <Button
                                                 variant='contained'
-                                                disabled={ptb.quantity <= 1 || preferenceId}
+                                                disabled={ptb.quantity <= 1 || preferenceId !== null}
                                                 onClick={() => handleDecrement(ptb.title)}
                                             >
                                                 <RemoveIcon />
@@ -130,7 +130,7 @@ export function CartDrawer() {
                                             </Typography>
                                             <Button
                                                 variant='contained'
-                                                disabled={preferenceId}
+                                                disabled={preferenceId !== null}
                                                 onClick={() => handleIncrement(ptb.title)}
                                             >
                                                 <AddIcon />
@@ -140,7 +140,7 @@ export function CartDrawer() {
                                         <TableCell align='center' sx={{ borderBottom: 0 }}>
                                             <Button
                                                 variant='contained'
-                                                disabled={preferenceId}
+                                                disabled={preferenceId !== null}
                                                 onClick={() => handleRemoveItem(ptb.title)}
                                             >
                                                 <DeleteIcon />

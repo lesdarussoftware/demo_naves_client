@@ -41,8 +41,9 @@ export function usePayments() {
                 'Authorization': auth?.token
             }
         })
-        const data = await res.json()
-        console.log(data)
+        const { message, updated_payment } = await res.json()
+        setPayments([...payments.filter(p => p.id !== updated_payment.id), updated_payment].sort((a, b) => a.id - b.id))
+        console.log(message)
     }
 
     return { payments, getPayments, updatePayment, handleClaimReward }
