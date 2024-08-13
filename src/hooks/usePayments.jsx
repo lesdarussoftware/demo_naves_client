@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 
 import { AuthContext } from "../providers/AuthProvider";
+import { MessageContext } from "../providers/MessageProvider";
 
 import { PAYMENT_URL } from "../helpers/urls";
 import { OK } from "../helpers/status-codes";
@@ -8,6 +9,7 @@ import { OK } from "../helpers/status-codes";
 export function usePayments() {
 
     const { auth } = useContext(AuthContext)
+    const { setMessage, setOpenMessage, setSeverity } = useContext(MessageContext)
 
     const [payments, setPayments] = useState([])
 
@@ -43,8 +45,15 @@ export function usePayments() {
             }
         })
         const { message, updated_payment } = await res.json()
-        setPayments([...payments.filter(p => p.id !== updated_payment.id), updated_payment].sort((a, b) => a.id - b.id))
-        console.log(message)
+        if (res.status === OK) {
+            setPayments([...payments.filter(p => p.id !== updated_payment.id), updated_payment].sort((a, b) => a.id - b.id))
+            setSeverity('success')
+            setMessage(message)
+        } else {
+            setSeverity('error')
+            setMessage('Ocurrió un error.')
+        }
+        setOpenMessage(true)
     }
 
     return { payments, getPayments, updatePayment, handleClaimReward }

@@ -4,6 +4,7 @@ import { ethers } from "ethers";
 import { AuthContext } from "../providers/AuthProvider";
 import { MpContext } from "../providers/MpProvider";
 import { MetamaskContext } from "../providers/MetamaskProvider";
+import { MessageContext } from "../providers/MessageProvider";
 
 import { CHECKOUT_URL } from "../helpers/urls";
 import { CREATED } from "../helpers/status-codes";
@@ -13,6 +14,7 @@ export function useCheckout() {
     const { auth } = useContext(AuthContext)
     const { setPreferenceId } = useContext(MpContext)
     const { contract } = useContext(MetamaskContext)
+    const { setSeverity, setMessage, setOpenMessage } = useContext(MessageContext)
 
     const [cartConfirmed, setCartConfirmed] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -39,10 +41,14 @@ export function useCheckout() {
             const amountInWei = ethers.parseUnits(amount, 18);
             await contract.depositLDS(amountInWei)
             action()
-            console.log('Pago realizado con éxito.')
+            setSeverity('success')
+            setMessage('Pago realizado con éxito.')
         } catch (err) {
             console.log(err)
+            setSeverity('error')
+            setMessage('Ocurrió un error.')
         }
+        setOpenMessage(true)
     }
 
     return {
