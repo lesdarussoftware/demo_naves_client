@@ -6,6 +6,7 @@ import { MpContext } from "../providers/MpProvider";
 import { MetamaskContext } from "../providers/MetamaskProvider";
 
 import { CHECKOUT_URL } from "../helpers/urls";
+import { CREATED } from "../helpers/status-codes";
 
 export function useCheckout() {
 
@@ -26,7 +27,7 @@ export function useCheckout() {
             body: JSON.stringify(items)
         })
         const data = await res.json()
-        if (res.status === 201) {
+        if (res.status === CREATED) {
             setPreferenceId(data.id)
             setLoading(false)
         }

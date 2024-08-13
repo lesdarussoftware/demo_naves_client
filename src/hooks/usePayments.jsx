@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../providers/AuthProvider";
 
 import { PAYMENT_URL } from "../helpers/urls";
+import { OK } from "../helpers/status-codes";
 
 export function usePayments() {
 
@@ -19,7 +20,7 @@ export function usePayments() {
             }
         })
         const data = await res.json()
-        if (res.status === 200) setPayments(data)
+        if (res.status === OK) setPayments(data)
     }
 
     async function updatePayment(payment_id) {

@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { PRODUCT_URL } from "../helpers/urls";
+import { OK } from "../helpers/status-codes";
 
 export function useProducts() {
 
@@ -14,7 +15,7 @@ export function useProducts() {
             }
         })
         const data = await res.json()
-        if (res.status === 200) setProducts(data)
+        if (res.status === OK) setProducts(data)
     }
 
     return { products, getProducts }

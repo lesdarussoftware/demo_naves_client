@@ -10,6 +10,7 @@ import { useForm } from "../hooks/useForm"
 import { Layout } from "../components/Layout"
 
 import { AUTH_URL } from "../helpers/urls"
+import { CREATED } from "../helpers/status-codes"
 
 export function Login() {
 
@@ -40,7 +41,7 @@ export function Login() {
                 body: JSON.stringify(formData)
             })
             const data = await res.json()
-            if (res.status === 201) {
+            if (res.status === CREATED) {
                 setAuth(data)
                 localStorage.setItem('demo_naves_auth', JSON.stringify(data))
                 navigate('/')
