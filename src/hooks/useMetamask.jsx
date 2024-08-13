@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { ethers, solidityPackedKeccak256, getBytes, Signature } from "ethers"
+import { ethers } from "ethers"
 
 import { MetamaskContext } from "../providers/MetamaskProvider"
 
@@ -9,9 +9,7 @@ import { CONTRACT_ADDRESS } from "../helpers/env"
 export function useMetamask() {
 
     const {
-        signer,
         setSigner,
-        contract,
         setContract,
         account,
         setAccount,
@@ -54,24 +52,5 @@ export function useMetamask() {
         }
     }
 
-    async function getTransactionSignature(amount) {
-        try {
-            const nonce = await contract.getNonce(account);
-            const hash = solidityPackedKeccak256(
-                ["address", "string", "uint256"],
-                [account, amount, nonce]
-            );
-            const messageHash = solidityPackedKeccak256(
-                ["string", "bytes32"],
-                ["\x19Ethereum Signed Message:\n32", hash]
-            );
-            const signature = await signer.signMessage(getBytes(messageHash));
-            const { r, s, v } = Signature.from(signature)
-            return { r, s, v };
-        } catch (err) {
-            console.error("Error signing transaction:", err);
-        }
-    }
-
-    return { connectMetaMask, getTransactionSignature }
+    return { connectMetaMask }
 }

@@ -37,6 +37,13 @@ export function Success() {
             <Button variant="contained" sx={{ display: 'block', margin: 'auto' }} onClick={() => navigate('/')}>
                 Volver al inicio
             </Button>
+            <Button
+                variant="contained"
+                sx={{ display: 'block', margin: 'auto', mt: 2 }}
+                onClick={() => navigate('/pagos')}
+            >
+                Mis pagos
+            </Button>
         </Layout>
     )
 }

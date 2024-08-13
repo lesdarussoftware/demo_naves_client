@@ -43,9 +43,9 @@ export function CartDrawer() {
         createPreference,
         cartConfirmed,
         setCartConfirmed,
-        sendTransactionSignature
+        handlePayWithLds
     } = useCheckout()
-    const { connectMetaMask, getTransactionSignature } = useMetamask()
+    const { connectMetaMask } = useMetamask()
 
     const handleIncrement = title => {
         setProductsToBuy([
@@ -88,12 +88,6 @@ export function CartDrawer() {
     const handlePayWithMp = () => {
         setLoading(true)
         createPreference({ items: productsToBuy })
-    }
-
-    const handlePayWithLds = async (amount) => {
-        setLoading(true)
-        const { r, s, v } = await getTransactionSignature(amount)
-        sendTransactionSignature({ account, amount, r, s, v })
     }
 
     return (
@@ -216,7 +210,11 @@ export function CartDrawer() {
                                                     if (account) {
                                                         handlePayWithLds(productsToBuy.reduce((acc, product) => {
                                                             return acc + product.unit_price * product.quantity
-                                                        }, 0).toFixed(2))
+                                                        }, 0).toFixed(2), () => {
+                                                            setCartConfirmed(false)
+                                                            setProductsToBuy([])
+                                                            setLoading(false)
+                                                        })
                                                     } else {
                                                         connectMetaMask()
                                                     }

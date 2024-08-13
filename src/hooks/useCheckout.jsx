@@ -1,7 +1,9 @@
 import { useContext, useState } from "react";
+import { ethers } from "ethers";
 
 import { AuthContext } from "../providers/AuthProvider";
 import { MpContext } from "../providers/MpProvider";
+import { MetamaskContext } from "../providers/MetamaskProvider";
 
 import { CHECKOUT_URL } from "../helpers/urls";
 
@@ -9,6 +11,7 @@ export function useCheckout() {
 
     const { auth } = useContext(AuthContext)
     const { setPreferenceId } = useContext(MpContext)
+    const { contract } = useContext(MetamaskContext)
 
     const [cartConfirmed, setCartConfirmed] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -29,18 +32,16 @@ export function useCheckout() {
         }
     }
 
-    async function sendTransactionSignature({ account, amount, r, s, v }) {
-        const res = await fetch(CHECKOUT_URL + '/transaction-signature', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': auth?.token
-            },
-            body: JSON.stringify({ account, amount, r, s, v })
-        })
-        const data = await res.json()
-        setLoading(false)
-        console.log(data.message)
+    const handlePayWithLds = async (amount, action) => {
+        setLoading(true)
+        try {
+            const amountInWei = ethers.parseUnits(amount, 18);
+            await contract.depositLDS(amountInWei)
+            action()
+            console.log('Pago realizado con éxito.')
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     return {
@@ -49,6 +50,6 @@ export function useCheckout() {
         cartConfirmed,
         setCartConfirmed,
         createPreference,
-        sendTransactionSignature
+        handlePayWithLds
     }
 }
