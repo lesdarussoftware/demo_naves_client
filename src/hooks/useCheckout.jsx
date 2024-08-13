@@ -31,8 +31,8 @@ export function useCheckout() {
         const data = await res.json()
         if (res.status === CREATED) {
             setPreferenceId(data.id)
-            setLoading(false)
         }
+        setLoading(false)
     }
 
     const handlePayWithLds = async (amount, action) => {
@@ -49,6 +49,7 @@ export function useCheckout() {
             setMessage('Ocurrió un error.')
         }
         setOpenMessage(true)
+        setLoading(false)
     }
 
     return {

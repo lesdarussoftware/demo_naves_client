@@ -18,6 +18,8 @@ import { MetamaskContext } from '../providers/MetamaskProvider';
 import { useCheckout } from '../hooks/useCheckout';
 import { useMetamask } from '../hooks/useMetamask';
 
+import Logo from '../assets/logo.png';
+
 const drawerWidth = 500;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
@@ -213,14 +215,19 @@ export function CartDrawer() {
                                                         }, 0).toFixed(2), () => {
                                                             setCartConfirmed(false)
                                                             setProductsToBuy([])
-                                                            setLoading(false)
                                                         })
                                                     } else {
                                                         connectMetaMask()
                                                     }
                                                 }}
                                             >
-                                                {account ? 'Pagar con LDS' : 'Conectar Metamask'}
+                                                {account ?
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+                                                        <span> Pagar con</span>
+                                                        <img src={Logo} width={50} />
+                                                    </Box> :
+                                                    'Conectar Metamask'
+                                                }
                                             </Button>
                                             <Button
                                                 variant='outlined'
