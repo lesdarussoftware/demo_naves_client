@@ -145,7 +145,7 @@ export function Layout({ window, children }) {
                                         onMouseEnter={() => setShowUserDropdown(true)}
                                         onClick={() => setShowUserDropdown(!showUserDropdown)}
                                     >
-                                        {auth?.user.name.charAt(0).toUpperCase()}
+                                        {auth?.user?.name?.charAt(0)?.toUpperCase()}
                                     </Avatar>
                                     {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown} />}
                                 </Box>
