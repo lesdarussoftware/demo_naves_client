@@ -21,10 +21,9 @@ import { CartContext } from '../providers/CartProvider';
 
 import { CartDrawer } from './CartDrawer';
 
-// import { UserDropdown } from './UserDropdown';
+import { UserDropdown } from './UserDropdown';
 
-// import LogoWhite from '../../assets/logo-white.jpeg';
-// import LogoBlack from '../../assets/logo-black.jpeg';
+import Logo from '../assets/logo.png';
 
 const drawerWidth = 240;
 
@@ -40,10 +39,10 @@ export function Layout({ window, children }) {
     const [showUserDropdown, setShowUserDropdown] = useState(false);
 
     const navItems = [
-        { label: 'Inicio', pathname: '/', auth: true, action: () => navigate('/') },
-        { label: 'Pagos', pathname: '/pagos', auth: true, action: () => navigate('/pagos') },
-        { label: 'Registro', pathname: '/registro', auth: false, action: () => navigate('/registro') },
-        { label: 'Login', pathname: '/login', auth: false, action: () => navigate('/login') }
+        { label: 'Inicio', pathname: '/', show: 'ALWAYS', action: () => navigate('/') },
+        { label: 'Pagos', pathname: '/pagos', show: 'AUTH', action: () => navigate('/pagos') },
+        { label: 'Registro', pathname: '/registro', show: 'NO_AUTH', action: () => navigate('/registro') },
+        { label: 'Login', pathname: '/login', show: 'NO_AUTH', action: () => navigate('/login') }
     ];
 
     const handleDrawerToggle = () => {
@@ -52,16 +51,18 @@ export function Layout({ window, children }) {
 
     const drawer = (
         <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-            {/* <img src={LogoWhite} width={60} /> */}
+            <img src={Logo} width={100} style={{ marginTop: 20, marginBottom: 10 }} />
             <Divider />
             <List>
-                {navItems.filter(item => item.auth || (!item.auth && !auth)).map((item) => (
-                    <ListItem key={item.label} disablePadding onClick={() => item.action()}>
-                        <ListItemButton sx={{ textAlign: 'center' }}>
-                            <ListItemText primary={item.label.toUpperCase()} />
-                        </ListItemButton>
-                    </ListItem>
-                ))}
+                {navItems
+                    .filter(item => item.show === 'ALWAYS' || (auth && item.show === 'AUTH') || (!auth && item.show === 'NO_AUTH'))
+                    .map((item) => (
+                        <ListItem key={item.label} disablePadding onClick={() => item.action()}>
+                            <ListItemButton sx={{ textAlign: 'center' }}>
+                                <ListItemText primary={item.label.toUpperCase()} />
+                            </ListItemButton>
+                        </ListItem>
+                    ))}
             </List>
         </Box>
     );
@@ -72,7 +73,7 @@ export function Layout({ window, children }) {
         <Box>
             <CssBaseline />
             <AppBar position="fixed" sx={{ alignItems: 'center' }}>
-                <Toolbar sx={{ width: '100%', maxWidth: '2000px', display: 'flex', justifyContent: { xs: 'space-between', sm: 'end' }, px: 2 }}>
+                <Toolbar sx={{ width: '100%', maxWidth: '2000px', display: 'flex', justifyContent: 'space-between', px: 2 }}>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
@@ -82,27 +83,31 @@ export function Layout({ window, children }) {
                     >
                         <MenuIcon />
                     </IconButton>
-                    {/* <img src={LogoBlack} width={60} className='menuLogo' /> */}
+                    <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+                        <img src={Logo} width={100} />
+                    </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', gap: 4 }}>
                         <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
-                            {navItems.filter(item => item.auth || (!item.auth && !auth)).map((item) => (
-                                <Button
-                                    key={item.label}
-                                    sx={{
-                                        backgroundColor: pathname === item.pathname ? '#fff' : '#002561',
-                                        color: pathname === item.pathname ? '#002561' : '#fff',
-                                        mr: 1,
-                                        ml: 1,
-                                        ':hover': {
-                                            backgroundColor: '#fff',
-                                            color: '#002561'
-                                        }
-                                    }}
-                                    onClick={() => item.action()}
-                                >
-                                    {item.label}
-                                </Button>
-                            ))}
+                            {navItems
+                                .filter(item => item.show === 'ALWAYS' || (auth && item.show === 'AUTH') || (!auth && item.show === 'NO_AUTH'))
+                                .map((item) => (
+                                    <Button
+                                        key={item.label}
+                                        sx={{
+                                            backgroundColor: pathname === item.pathname ? '#fff' : '#002561',
+                                            color: pathname === item.pathname ? '#002561' : '#fff',
+                                            mr: 1,
+                                            ml: 1,
+                                            ':hover': {
+                                                backgroundColor: '#fff',
+                                                color: '#002561'
+                                            }
+                                        }}
+                                        onClick={() => item.action()}
+                                    >
+                                        {item.label}
+                                    </Button>
+                                ))}
                         </Box>
                         {auth &&
                             <>
@@ -140,9 +145,9 @@ export function Layout({ window, children }) {
                                         onMouseEnter={() => setShowUserDropdown(true)}
                                         onClick={() => setShowUserDropdown(!showUserDropdown)}
                                     >
-                                        U
+                                        {auth?.user.name.charAt(0).toUpperCase()}
                                     </Avatar>
-                                    {/* {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown} />} */}
+                                    {showUserDropdown && <UserDropdown setShowUserDropdown={setShowUserDropdown} />}
                                 </Box>
                             </>
                         }

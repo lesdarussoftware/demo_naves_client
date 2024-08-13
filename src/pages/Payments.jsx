@@ -1,7 +1,9 @@
 import { useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import { format } from 'date-fns'
 
+import { AuthContext } from "../providers/AuthProvider";
 import { MetamaskContext } from "../providers/MetamaskProvider";
 import { usePayments } from "../hooks/usePayments";
 import { useMetamask } from "../hooks/useMetamask";
@@ -10,13 +12,20 @@ import { Layout } from "../components/Layout";
 
 export function Payments() {
 
+    const { auth } = useContext(AuthContext)
     const { account } = useContext(MetamaskContext)
+
+    const navigate = useNavigate()
 
     const { payments, getPayments, handleClaimReward } = usePayments()
     const { connectMetaMask } = useMetamask()
 
     useEffect(() => {
-        getPayments()
+        if (auth) {
+            getPayments()
+        } else {
+            return navigate('/')
+        }
     }, [])
 
     return (
